@@ -1,4 +1,4 @@
-Hy[pher]-vhyplus Vagrant Provider
+Hy[pher]-v[hy]plus Vagrant Provider
 =================================
 
 
