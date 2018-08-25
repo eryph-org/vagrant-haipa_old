@@ -1,27 +1,19 @@
-DigitalOcean Vagrant Provider
-==============================
+Hy[pher]-vhyplus Vagrant Provider
+=================================
 
-[![Gem](https://img.shields.io/gem/v/vagrant-digitalocean.svg)](https://rubygems.org/gems/vagrant-digitalocean)
-[![Gem](https://img.shields.io/gem/dt/vagrant-digitalocean.svg)](https://rubygems.org/gems/vagrant-digitalocean)
-[![Gem](https://img.shields.io/gem/dtv/vagrant-digitalocean.svg)](https://rubygems.org/gems/vagrant-digitalocean)
-[![Twitter](https://img.shields.io/twitter/url/https/github.com/devopsgroup-io/vagrant-digitalocean.svg?style=social)](https://twitter.com/intent/tweet?text=Check%20out%20this%20awesome%20Vagrant%20plugin%21&url=https%3A%2F%2Fgithub.com%2Fdevopsgroup-io%2Fvagrant-digitalocean&hashtags=vagrant%2Cdigitalocean&original_referer=)
 
-`vagrant-digitalocean` is a Vagrant provider plugin that supports the management of [DigitalOcean](https://www.digitalocean.com/) Droplets (virtual machines).
+`vagrant-hyvhyplus` is a Vagrant provider plugin that supports the management of Hyper-V virtual machines using the hyvyplus management api.
 
 Features include:
-- Create and destroy Droplets
-- Power on and off Droplets
-- Rebuild a Droplet (destroys and ups with same IP address)
-- Provision a Droplet with shell
-- Setup a SSH public key for authentication
-- Create a new user account during Droplet creation
+- Create and destroy Virtual Machines
+- Power on and off Virtual Machines
 
 
 Install
 -------
 Install the provider plugin using the Vagrant command-line interface:
 
-`vagrant plugin install vagrant-digitalocean`
+`vagrant plugin install vagrant-hyvhyplus`
 
 
 Configure
