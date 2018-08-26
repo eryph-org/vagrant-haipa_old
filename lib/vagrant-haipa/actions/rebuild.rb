@@ -1,7 +1,7 @@
-require 'vagrant-digitalocean/helpers/client'
+require 'vagrant-haipa'
 
 module VagrantPlugins
-  module DigitalOcean
+  module Haipa
     module Actions
       class Rebuild
         include Helpers::Client
@@ -11,7 +11,7 @@ module VagrantPlugins
           @app = app
           @machine = env[:machine]
           @client = client
-          @logger = Log4r::Logger.new('vagrant::digitalocean::rebuild')
+          @logger = Log4r::Logger.new('vagrant::haipa::rebuild')
         end
 
         def call(env)
@@ -23,7 +23,7 @@ module VagrantPlugins
           })
 
           # wait for request to complete
-          env[:ui].info I18n.t('vagrant_digital_ocean.info.rebuilding')
+          env[:ui].info I18n.t('vagrant_haipa.info.rebuilding')
           @client.wait_for_event(env, result['action']['id'])
 
           # refresh droplet state with provider

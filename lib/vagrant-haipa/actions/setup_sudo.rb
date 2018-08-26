@@ -1,11 +1,11 @@
 module VagrantPlugins
-  module DigitalOcean
+  module Haipa
     module Actions
       class SetupSudo
         def initialize(app, env)
           @app = app
           @machine = env[:machine]
-          @logger = Log4r::Logger.new('vagrant::digitalocean::setup_sudo')
+          @logger = Log4r::Logger.new('vagrant::haipa::setup_sudo')
         end
 
         def call(env)
@@ -23,13 +23,13 @@ module VagrantPlugins
           case guest_name
           when /debian/
             if @machine.provider_config.image =~ /^debian-8/
-              env[:ui].info I18n.t('vagrant_digital_ocean.info.late_sudo_install_deb8')
+              env[:ui].info I18n.t('vagrant_haipa.info.late_sudo_install_deb8')
               @machine.communicate.execute(<<-'BASH')
                 if [ ! -x /usr/bin/sudo ] ; then apt-get update -y && apt-get install -y sudo ; fi
               BASH
             end
           when /redhat/
-            env[:ui].info I18n.t('vagrant_digital_ocean.info.modifying_sudo')
+            env[:ui].info I18n.t('vagrant_haipa.info.modifying_sudo')
 
             # disable tty requirement for sudo
             @machine.communicate.execute(<<-'BASH')

@@ -1,7 +1,7 @@
-require 'vagrant-digitalocean/helpers/client'
+require 'vagrant-haipa/helpers/client'
 
 module VagrantPlugins
-  module DigitalOcean
+  module Haipa
     module Actions
       class Destroy
         include Helpers::Client
@@ -10,14 +10,14 @@ module VagrantPlugins
           @app = app
           @machine = env[:machine]
           @client = client
-          @logger = Log4r::Logger.new('vagrant::digitalocean::destroy')
+          @logger = Log4r::Logger.new('vagrant::haipa::destroy')
         end
 
         def call(env)
           # submit destroy droplet request
           @client.delete("/v2/droplets/#{@machine.id}")
 
-          env[:ui].info I18n.t('vagrant_digital_ocean.info.destroying')
+          env[:ui].info I18n.t('vagrant_haipa.info.destroying')
 
           # set the machine id to nil to cleanup local vagrant state
           @machine.id = nil

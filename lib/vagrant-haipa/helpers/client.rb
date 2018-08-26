@@ -1,9 +1,9 @@
-require 'vagrant-digitalocean/helpers/result'
+require 'vagrant-haipa'
 require 'faraday'
 require 'json'
 
 module VagrantPlugins
-  module DigitalOcean
+  module Haipa
     module Helpers
       module Client
         def client
@@ -15,10 +15,10 @@ module VagrantPlugins
         include Vagrant::Util::Retryable
 
         def initialize(machine)
-          @logger = Log4r::Logger.new('vagrant::digitalocean::apiclient')
+          @logger = Log4r::Logger.new('vagrant::haipa::apiclient')
           @config = machine.provider_config
           @client = Faraday.new({
-            :url => 'https://api.digitalocean.com/',
+            :url => 'http://localhost:62188/',
             :ssl => {
               :ca_file => @config.ca_path
             }

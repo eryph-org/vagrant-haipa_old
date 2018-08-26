@@ -1,19 +1,19 @@
 require 'optparse'
-require 'vagrant-digitalocean/helpers/client'
+require 'vagrant-haipa'
 
 module VagrantPlugins
-  module DigitalOcean
+  module Haipa
     module Commands
       class List < Vagrant.plugin('2', :command)
         def self.synopsis
-          "list available images and regions from DigitalOcean"
+          "list available images and regions from Haipa"
         end
 
         def execute
           @token = nil
 
           @opts = OptionParser.new do |o|
-            o.banner = 'Usage: vagrant digitalocean-list [options] <images|regions|sizes> <token>'
+            o.banner = 'Usage: vagrant haipa-list [options] <images|regions|sizes> <token>'
 
             o.on("-r", "--[no-]regions", "show the regions when listing images") do |r|
               @regions = r
@@ -36,23 +36,23 @@ module VagrantPlugins
               images_table = images.map do |image|
                 '%-50s %-20s %-20s %-50s' % ["#{image['distribution']} #{image['name']}", image['slug'], image['id'], image['regions'].join(', ')]
               end
-              @env.ui.info I18n.t('vagrant_digital_ocean.info.images_with_regions', images: images_table.sort.join("\r\n"))
+              @env.ui.info I18n.t('vagrant_haipa.info.images_with_regions', images: images_table.sort.join("\r\n"))
             else
               images_table = images.map do |image|
                 '%-50s %-30s %-30s' % ["#{image['distribution']} #{image['name']}", image['slug'], image['id']]
               end
-              @env.ui.info I18n.t('vagrant_digital_ocean.info.images', images: images_table.sort.join("\r\n"))
+              @env.ui.info I18n.t('vagrant_haipa.info.images', images: images_table.sort.join("\r\n"))
             end
           when "regions"
             result = query('/v2/regions')
             regions = Array(result["regions"])
             regions_table = regions.map { |region| '%-30s %-12s' % [region['name'], region['slug']] }
-            @env.ui.info I18n.t('vagrant_digital_ocean.info.regions', regions: regions_table.sort.join("\r\n"))
+            @env.ui.info I18n.t('vagrant_haipa.info.regions', regions: regions_table.sort.join("\r\n"))
           when "sizes"
             result = query('/v2/sizes')
             sizes = Array(result["sizes"])
             sizes_table = sizes.map { |size| '%-15s %-15s %-12s' % ["#{size['memory']}MB", size['vcpus'], size['slug']] }
-            @env.ui.info I18n.t('vagrant_digital_ocean.info.sizes', sizes: sizes_table.sort_by{|s| s['memory']}.join("\r\n"))
+            @env.ui.info I18n.t('vagrant_haipa.info.sizes', sizes: sizes_table.sort_by{|s| s['memory']}.join("\r\n"))
           else
             usage
             return 1
@@ -60,7 +60,7 @@ module VagrantPlugins
 
           0
         rescue Faraday::Error::ConnectionFailed, RuntimeError => e
-          @env.ui.error I18n.t('vagrant_digital_ocean.info.list_error', message: e.message)
+          @env.ui.error I18n.t('vagrant_haipa.info.list_error', message: e.message)
           1
         end
 

@@ -1,27 +1,30 @@
-require 'vagrant-digitalocean/helpers/client'
+require 'vagrant-haipa'
 
 module VagrantPlugins
-  module DigitalOcean
+  module Haipa
     module Actions
-      class Reload
+      class ShutDown
         include Helpers::Client
 
         def initialize(app, env)
           @app = app
           @machine = env[:machine]
           @client = client
-          @logger = Log4r::Logger.new('vagrant::digitalocean::reload')
+          @logger = Log4r::Logger.new('vagrant::haipa::shut_down')
         end
 
         def call(env)
-          # submit reboot droplet request
+          # submit shutdown droplet request
           result = @client.post("/v2/droplets/#{@machine.id}/actions", {
-            :type => 'reboot'
+            :type => 'shutdown'
           })
 
           # wait for request to complete
-          env[:ui].info I18n.t('vagrant_digital_ocean.info.reloading')
+          env[:ui].info I18n.t('vagrant_haipa.info.shutting_down')
           @client.wait_for_event(env, result['action']['id'])
+
+          # refresh droplet state with provider
+          Provider.droplet(@machine, :refresh => true)
 
           @app.call(env)
         end
@@ -29,5 +32,4 @@ module VagrantPlugins
     end
   end
 end
-
 

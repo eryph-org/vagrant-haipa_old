@@ -1,9 +1,9 @@
-require 'vagrant-digitalocean/version'
-require 'vagrant-digitalocean/plugin'
-require 'vagrant-digitalocean/errors'
+require 'vagrant-haipa/version'
+require 'vagrant-haipa/plugin'
+require 'vagrant-haipa/errors'
 
 module VagrantPlugins
-  module DigitalOcean
+  module Haipa
     def self.source_root
       @source_root ||= Pathname.new(File.expand_path('../../', __FILE__))
     end

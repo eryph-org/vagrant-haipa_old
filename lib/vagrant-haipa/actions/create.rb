@@ -1,7 +1,7 @@
-require 'vagrant-digitalocean/helpers/client'
+require 'vagrant-haipa/helpers/client'
 
 module VagrantPlugins
-  module DigitalOcean
+  module Haipa
     module Actions
       class Create
         include Helpers::Client
@@ -11,7 +11,7 @@ module VagrantPlugins
           @app = app
           @machine = env[:machine]
           @client = client
-          @logger = Log4r::Logger.new('vagrant::digitalocean::create')
+          @logger = Log4r::Logger.new('vagrant::haipa::create')
         end
 
         def call(env)
@@ -34,7 +34,7 @@ module VagrantPlugins
           }.delete_if { |k, v| v.nil? })
 
           # wait for request to complete
-          env[:ui].info I18n.t('vagrant_digital_ocean.info.creating')
+          env[:ui].info I18n.t('vagrant_haipa.info.creating')
           @client.wait_for_event(env, result['links']['actions'].first['id'])
 
           # assign the machine id for reference in other commands
@@ -44,11 +44,11 @@ module VagrantPlugins
           droplet = Provider.droplet(@machine, :refresh => true)
           public_network = droplet['networks']['v4'].find { |network| network['type'] == 'public' }
           private_network = droplet['networks']['v4'].find { |network| network['type'] == 'private' }
-          env[:ui].info I18n.t('vagrant_digital_ocean.info.droplet_ip', {
+          env[:ui].info I18n.t('vagrant_haipa.info.droplet_ip', {
             :ip => public_network['ip_address']
           })
           if private_network
-            env[:ui].info I18n.t('vagrant_digital_ocean.info.droplet_private_ip', {
+            env[:ui].info I18n.t('vagrant_haipa.info.droplet_private_ip', {
               :ip => private_network['ip_address']
             })
           end

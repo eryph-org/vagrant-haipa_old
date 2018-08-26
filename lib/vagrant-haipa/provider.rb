@@ -1,18 +1,18 @@
-require 'vagrant-digitalocean/actions'
+require 'vagrant-haipa/actions'
 
 module VagrantPlugins
-  module DigitalOcean
+  module Haipa
     class Provider < Vagrant.plugin('2', :provider)
 
       # This class method caches status for all droplets within
-      # the DigitalOcean account. A specific droplet's status
+      # the Haipa account. A specific droplet's status
       # may be refreshed by passing :refresh => true as an option.
       def self.droplet(machine, opts = {})
         client = Helpers::ApiClient.new(machine)
 
         # load status of droplets if it has not been done before
         if !@droplets
-          result = client.request('/v2/droplets')
+          result = client.request('/odata/machineset')
           @droplets = result['droplets']
         end
 
