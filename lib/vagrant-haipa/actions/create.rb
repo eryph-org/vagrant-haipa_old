@@ -18,82 +18,52 @@ module VagrantPlugins
           ssh_key_id = [env[:ssh_key_id]]
 
           # submit new droplet request
-          result = @client.post('/api/converge', {
-
-            'vms' => [
-              {
-                'host' => {
-                  'hostname' => 'WASM06',
-                  },
-                  'vm' => {
-                    'name' => 'basic2',
-                    'hostname' => 'basic',
-                    'path' => 't:\\openstack\\vms',
-
-                    'memory' => {
-                      'startup' => 2048
-                    },
-                    'disks' => [
-                      {
-                        "template" => "t:\\openstack\\ubuntu-xenial.vhdx",
-                        "size" => 20
-                      },
-                    ],
-                    'networks' => [
-                      {
-                        "name" => "eth0",
-                        "switch" => "Standardswitch",
-                        "subnets" => [
-                          {
-                            'type' => "dhcp"
-                          }
-                        ]
-                      },
-                    ],
-                    "provisioning" => {
-                      "userdata" => {
-                      "password" => "ubuntu",
-                      "chpasswd" => {
-                        "expire"=> "False"
-                      }
-                    }
-                  }
-                  }
-              },
-            ]
-        })
+          result = @client.post('/v2/droplets', {
+            :size => @machine.provider_config.size,
+            :region => @machine.provider_config.region,
+            :image => @machine.provider_config.image,
+            :name => @machine.config.vm.hostname || @machine.name,
+            :ssh_keys => ssh_key_id,
+            :private_networking => @machine.provider_config.private_networking,
+            :backups => @machine.provider_config.backups_enabled,
+            :ipv6 => @machine.provider_config.ipv6,
+            :user_data => @machine.provider_config.user_data,
+            :monitoring => @machine.provider_config.monitoring,
+            :tags => @machine.provider_config.tags,
+            :volumes => @machine.provider_config.volumes
+          }.delete_if { |k, v| v.nil? })
 
           # wait for request to complete
           env[:ui].info I18n.t('vagrant_haipa.info.creating')
-          @client.wait_for_event(env, result['id'])
+          @client.wait_for_event(env, result['links']['actions'].first['id'])
 
           # assign the machine id for reference in other commands
-          operationResult = @client.request("odata/OperationSet(#{result['id']})")
-          @machine.id = operationResult['MachineGuid'].to_s
+          @machine.id = result['droplet']['id'].to_s
 
           # refresh droplet state with provider and output ip address
-          retryable(:tries => 20, :sleep => 10) do
-            next if env[:interrupted]
-
-            machine = Provider.droplet(@machine, :refresh => true)
-            address = machine['IpV4Addresses'].first
-            raise 'not ready' unless address
-
-            env[:ui].info I18n.t('vagrant_haipa.info.droplet_ip',:ip => address)
+          droplet = Provider.droplet(@machine, :refresh => true)
+          public_network = droplet['networks']['v4'].find { |network| network['type'] == 'public' }
+          private_network = droplet['networks']['v4'].find { |network| network['type'] == 'private' }
+          env[:ui].info I18n.t('vagrant_haipa.info.droplet_ip', {
+            :ip => public_network['ip_address']
+          })
+          if private_network
+            env[:ui].info I18n.t('vagrant_haipa.info.droplet_private_ip', {
+              :ip => private_network['ip_address']
+            })
           end
 
-
           # wait for ssh to be ready
-          #switch_user = @machine.provider_config.setup?
-          #user = @machine.config.ssh.username
-          #@machine.config.ssh.username = 'root' if switch_user
+          switch_user = @machine.provider_config.setup?
+          user = @machine.config.ssh.username
+          @machine.config.ssh.username = 'root' if switch_user
 
           retryable(:tries => 120, :sleep => 10) do
             next if env[:interrupted]
             raise 'not ready' if !@machine.communicate.ready?
           end
 
-          #@machine.config.ssh.username = user
+          @machine.config.ssh.username = user
 
           @app.call(env)
         end
