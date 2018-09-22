@@ -6,6 +6,8 @@ group :development do
   # gem dependency because we expect to be installed within the
   # Vagrant environment itself using `vagrant plugin`.
   gem "vagrant", :git => "https://github.com/mitchellh/vagrant.git"
+  gem 'ruby-debug-ide'
+  gem 'debase'
 end
 
 gem 'rake'

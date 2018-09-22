@@ -15,13 +15,11 @@ module VagrantPlugins
 
         def call(env)
           # submit power off droplet request
-          result = @client.post("/v2/droplets/#{@machine.id}/actions", {
-            :type => 'power_off'
-          })
+          result = @client.post("/odata/MachineSet(#{@machine.id})/Stop")
 
           # wait for request to complete
           env[:ui].info I18n.t('vagrant_haipa.info.powering_off')
-          @client.wait_for_event(env, result['action']['id'])
+          @client.wait_for_event(env, result['Id'])
 
           # refresh droplet state with provider
           Provider.droplet(@machine, :refresh => true)

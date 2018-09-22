@@ -16,8 +16,8 @@ module VagrantPlugins
           return @app.call(env) unless @machine.config.ssh.username
 
           # override ssh username to root temporarily
-          user = @machine.config.ssh.username
-          @machine.config.ssh.username = 'root'
+          #user = @machine.config.ssh.username
+          #@machine.config.ssh.username = 'root'
 
           env[:ui].info I18n.t('vagrant_haipa.info.creating_user', {
             :user => user

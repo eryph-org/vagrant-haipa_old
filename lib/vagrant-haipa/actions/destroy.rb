@@ -15,7 +15,7 @@ module VagrantPlugins
 
         def call(env)
           # submit destroy droplet request
-          @client.delete("/v2/droplets/#{@machine.id}")
+          @client.delete("/odata/machineSet(#{@machine.id})")
 
           env[:ui].info I18n.t('vagrant_haipa.info.destroying')
 

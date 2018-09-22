@@ -1,6 +1,7 @@
-require 'vagrant-haipa'
+require 'vagrant-haipa/helpers/result'
 require 'faraday'
 require 'json'
+require 'erb'
 
 module VagrantPlugins
   module Haipa
@@ -18,7 +19,7 @@ module VagrantPlugins
           @logger = Log4r::Logger.new('vagrant::haipa::apiclient')
           @config = machine.provider_config
           @client = Faraday.new({
-            :url => 'http://localhost:62188/',
+            :url => 'http://localhost:62189/',
             :ssl => {
               :ca_file => @config.ca_path
             }
@@ -39,7 +40,9 @@ module VagrantPlugins
           begin
             @logger.info "Request: #{path}"
             result = @client.send(method) do |req|
-              req.url path, params
+              req.url path
+              req.body = params.to_json if method == :post
+              req.params = params unless method == :post
               req.headers['Authorization'] = "Bearer #{@config.token}"
             end
           rescue Faraday::Error::ConnectionFailed => e
@@ -54,8 +57,10 @@ module VagrantPlugins
           end
 
           unless method == :delete
-            begin
+            begin              
               body = JSON.parse(result.body)
+              body.delete_if {|key, value| key == '@odata.context' }
+
               @logger.info "Response: #{body}"
               next_page = body["links"]["pages"]["next"] rescue nil
               unless next_page.nil?
@@ -67,7 +72,7 @@ module VagrantPlugins
                         req_target = 'ssh_keys'
                 end
                 body["#{req_target}"].concat(next_result["#{req_target}"])
-              end
+              end              
             rescue JSON::ParserError => e
               raise(Errors::JSONError, {
                 :message => e.message,
@@ -86,20 +91,28 @@ module VagrantPlugins
               :response => body.inspect
             })
           end
-
           Result.new(body)
         end
 
         def wait_for_event(env, id)
-          retryable(:tries => 120, :sleep => 10) do
+          timestamp = '2018-09-01T23:47:17.50094+02:00'
+          
+          retryable(:tries => 20, :sleep => 5) do
             # stop waiting if interrupted
             next if env[:interrupted]
 
             # check action status
-            result = self.request("/v2/actions/#{id}")
+            encoded_timestamp = ERB::Util.url_encode("Timestamp gt #{timestamp}")
+            result = self.request("odata/OperationSet(#{id})", "$expand" => "LogEntries($filter=Timestamp gt #{timestamp})")
+
+            result['LogEntries'].each do |entry|
+              env[:ui].info(entry['Message'])
+
+              timestamp = entry['Timestamp']
+            end
 
             yield result if block_given?
-            raise 'not ready' if result['action']['status'] != 'completed'
+            raise 'not ready' if result['Status'] != 'Completed'
           end
         end
       end

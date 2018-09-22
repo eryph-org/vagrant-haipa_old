@@ -54,17 +54,17 @@ module VagrantPlugins
 
       def validate(machine)
         errors = []
-        errors << I18n.t('vagrant_haipa.config.token') if !@token
+        #errors << I18n.t('vagrant_haipa.config.token') if !@token
 
         key = machine.config.ssh.private_key_path
         key = key[0] if key.is_a?(Array)
-        if !key
-          errors << I18n.t('vagrant_haipa.config.private_key')
-        elsif !File.file?(File.expand_path("#{key}.pub", machine.env.root_path))
-          errors << I18n.t('vagrant_haipa.config.public_key', {
-            :key => "#{key}.pub"
-          })
-        end
+#        if !key
+#          errors << I18n.t('vagrant_haipa.config.private_key')
+#        elsif !File.file?(File.expand_path("#{key}.pub", machine.env.root_path))
+#          errors << I18n.t('vagrant_haipa.config.public_key', {
+#            :key => "#{key}.pub"
+#          })
+       # end
 
         { 'Haipa Provider' => errors }
       end
