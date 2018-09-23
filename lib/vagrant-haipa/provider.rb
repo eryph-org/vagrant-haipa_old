@@ -1,4 +1,5 @@
 require 'vagrant-haipa/actions'
+require 'vagrant-haipa/helpers/client'
 
 module VagrantPlugins
   module Haipa
@@ -99,7 +100,7 @@ module VagrantPlugins
       # The state must be an instance of {MachineState}. Please read the
       # documentation of that class for more information.
       def state
-        state = Provider.droplet(@machine)['Status'].to_sym
+        state = Provider.droplet(@machine)['Status'].downcase.to_sym
         long = short = state.to_s
         Vagrant::MachineState.new(state, short, long)
       end
