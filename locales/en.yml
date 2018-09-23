@@ -1,5 +1,5 @@
 en:
-  vagrant_digital_ocean:
+  vagrant_haipa:
     info:
       off: "Droplet is off"
       not_created: "Droplet has not been created"
@@ -15,7 +15,7 @@ en:
       rebuilding: "Rebuilding the droplet..."
       reloading: "Rebooting the droplet..."
       creating_user: "Creating user account: %{user}..."
-      late_sudo_install_deb8:  "DigitalOcean's debian-8 image lacks sudo. Installing now."
+      late_sudo_install_deb8:  "Haipa's debian-8 image lacks sudo. Installing now."
       modifying_sudo: "Modifying sudoers file to remove tty requirement..."
       using_key: "Using existing SSH key: %{name}"
       creating_key: "Creating new SSH key: %{name}..."
@@ -26,7 +26,7 @@ en:
       images_with_regions: "Description                                        Slug                 ID                 Regions\n\n%{images}"
       regions: "Description                    Slug\n\n%{regions}"
       sizes: "Memory          CPUs            Slug\n\n%{sizes}"
-      list_error: 'Could not contact the DigitalOcean API: %{message}'
+      list_error: 'Could not contact the Haipa API: %{message}'
     config:
       token: "Token is required"
       private_key: "SSH private key path is required"
@@ -39,7 +39,7 @@ en:
 
         Please check the file's permissions.
       api_status: |-
-        There was an issue with the request made to the DigitalOcean
+        There was an issue with the request made to the Haipa
         API at:
 
         Path: %{path}
@@ -57,7 +57,7 @@ en:
         Guest path: %{guestpath}
         Error: %{stderr}
       json: |-
-        There was an issue with the JSON response from the DigitalOcean
+        There was an issue with the JSON response from the Haipa
         API at:
 
         Path: %{path}
@@ -76,11 +76,11 @@ en:
 
         Please ensure that the configured value exists in the collection.
       certificate: |-
-        The secure connection to the DigitalOcean API has failed. Please
+        The secure connection to the Haipa API has failed. Please
         ensure that your local certificates directory is defined in the
         provider config.
 
-            config.vm.provider :digital_ocean do |vm|
+            config.vm.provider :haipa do |vm|
               vm.ca_path = "/path/to/ssl/ca/cert.crt"
             end
 
@@ -88,4 +88,4 @@ en:
         with the Ruby install being unaware of the system specific ca
         certs.
       local_ip: |-
-        The DigitalOcean provider was unable to determine the host's IP.
+        The Haipa provider was unable to determine the host's IP.

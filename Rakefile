@@ -1,4 +1,6 @@
-require 'bundler/gem_helper'
+require "rubygems"
+require "bundler/setup"
+
 
 namespace :gem do
   Bundler::GemHelper.install_tasks

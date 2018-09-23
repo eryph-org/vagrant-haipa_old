@@ -1,14 +1,14 @@
 # -*- encoding: utf-8 -*-
 lib = File.expand_path('../lib', __FILE__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
-require 'vagrant-digitalocean/version'
+require 'vagrant-haipa/version'
 
 Gem::Specification.new do |gem|
-  gem.name          = "vagrant-digitalocean"
-  gem.version       = VagrantPlugins::DigitalOcean::VERSION
-  gem.authors       = ["John Bender","Seth Reeser"]
-  gem.email         = ["john.m.bender@gmail.com","info@devopsgroup.io"]
-  gem.description   = %q{Enables Vagrant to manage DigitalOcean droplets}
+  gem.name          = "vagrant-haipa"
+  gem.version       = VagrantPlugins::Haipa::VERSION
+  gem.authors       = ["Frank Wagner"]
+  gem.email         = ["info@contiva.com"]
+  gem.description   = %q{Enables Vagrant to manage Hyper-V with Haipa}
   gem.summary       = gem.description
 
   gem.files         = `git ls-files`.split($/)

@@ -1,12 +1,12 @@
 module VagrantPlugins
-  module DigitalOcean
+  module Haipa
     module Actions
       class ModifyProvisionPath
         def initialize(app, env)
           @app = app
           @machine = env[:machine]
           @logger =
-            Log4r::Logger.new('vagrant::digitalocean::modify_provision_path')
+            Log4r::Logger.new('vagrant::haipa::modify_provision_path')
         end
 
         def call(env)

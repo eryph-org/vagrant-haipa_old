@@ -1,8 +1,8 @@
-Hy[pher]-v[hy]+ Vagrant Provider
+Haipa Vagrant Provider
 =================================
 
 
-`vagrant-hyvhyplus` is a Vagrant provider plugin that supports the management of Hyper-V virtual machines using the hyvyplus management api.
+`vagrant-haipa` is a Vagrant provider plugin that supports the management of Hyper-V virtual machines using the hyvyplus management api.
 
 Features include:
 - Create and destroy Virtual Machines
@@ -13,12 +13,12 @@ Install
 -------
 Install the provider plugin using the Vagrant command-line interface:
 
-`vagrant plugin install vagrant-hyvhyplus`
+`vagrant plugin install vagrant-haipa`
 
 
 Configure
 ---------
-Once the provider has been installed, you will need to configure your project to use it. See the following example for a basic multi-machine `Vagrantfile` implementation that manages two DigitalOcean Droplets:
+Once the provider has been installed, you will need to configure your project to use it. See the following example for a basic multi-machine `Vagrantfile` implementation that manages two Haipa Droplets:
 
 ```ruby
 Vagrant.configure('2') do |config|
@@ -27,7 +27,7 @@ Vagrant.configure('2') do |config|
       config.vm.provider :digital_ocean do |provider, override|
         override.ssh.private_key_path = '~/.ssh/id_rsa'
         override.vm.box = 'digital_ocean'
-        override.vm.box_url = "https://github.com/devopsgroup-io/vagrant-digitalocean/raw/master/box/digital_ocean.box"
+        override.vm.box_url = "https://github.com/devopsgroup-io/vagrant-haipa/raw/master/box/digital_ocean.box"
         override.nfs.functional = false
         provider.token = 'YOUR TOKEN'
         provider.image = 'ubuntu-14-04-x64'
@@ -40,7 +40,7 @@ Vagrant.configure('2') do |config|
       config.vm.provider :digital_ocean do |provider, override|
         override.ssh.private_key_path = '~/.ssh/id_rsa'
         override.vm.box = 'digital_ocean'
-        override.vm.box_url = "https://github.com/devopsgroup-io/vagrant-digitalocean/raw/master/box/digital_ocean.box"
+        override.vm.box_url = "https://github.com/devopsgroup-io/vagrant-haipa/raw/master/box/digital_ocean.box"
         override.nfs.functional = false
         provider.token = 'YOUR TOKEN'
         provider.image = 'ubuntu-14-04-x64'
@@ -53,15 +53,15 @@ end
 ```
 
 **Configuration Requirements**
-- You *must* specify the `override.ssh.private_key_path` to enable authentication with the Droplet. The provider will create a new DigitalOcean SSH key using your public key which is assumed to be the `private_key_path` with a *.pub* extension.
-- You *must* specify your DigitalOcean Personal Access Token at `provider.token`. This may be found on the control panel within the *Apps &amp; API* section.
+- You *must* specify the `override.ssh.private_key_path` to enable authentication with the Droplet. The provider will create a new Haipa SSH key using your public key which is assumed to be the `private_key_path` with a *.pub* extension.
+- You *must* specify your Haipa Personal Access Token at `provider.token`. This may be found on the control panel within the *Apps &amp; API* section.
 
 **Supported Configuration Attributes**
 
 The following attributes are available to further configure the provider:
 - `provider.image`
     * A string representing the image to use when creating a new Droplet. It defaults to `ubuntu-14-04-x64`.
-    List available images with the `vagrant digitalocean-list images $DIGITAL_OCEAN_TOKEN` command. Like when using the DigitalOcean API directly, [it can be an image ID or slug](https://developers.digitalocean.com/documentation/v2/#create-a-new-droplet).
+    List available images with the `vagrant digitalocean-list images $DIGITAL_OCEAN_TOKEN` command. Like when using the Haipa API directly, [it can be an image ID or slug](https://developers.digitalocean.com/documentation/v2/#create-a-new-droplet).
 - `provider.ipv6`
     * A boolean flag indicating whether to enable IPv6
 - `provider.region`
@@ -73,11 +73,11 @@ The following attributes are available to further configure the provider:
 - `provider.backups_enabled`
     * A boolean flag indicating whether to enable backups for the Droplet. It defaults to `false`.
 - `provider.ssh_key_name`
-    * A string representing the name to use when creating a DigitalOcean SSH key for Droplet authentication. It defaults to `Vagrant`.
+    * A string representing the name to use when creating a Haipa SSH key for Droplet authentication. It defaults to `Vagrant`.
 - `provider.setup`
     * A boolean flag indicating whether to setup a new user account and modify sudo to disable tty requirement. It defaults to `true`. If you are using a tool like [Packer](https://packer.io) to create reusable snapshots with user accounts already provisioned, set to `false`.
 - `provider.monitoring`
-    * A boolean indicating whether to install the DigitalOcean agent for monitoring. It defaults to `false`.
+    * A boolean indicating whether to install the Haipa agent for monitoring. It defaults to `false`.
 - `provider.tags`
     * A flat array of tag names as strings to apply to the Droplet after it is created. Tag names can either be existing or new tags.
 - `provider.volumes`
@@ -112,9 +112,9 @@ The provider supports the following Vagrant sub-commands:
 
 Compatibility
 -------------
-This [DigitalOcean API](https://developers.digitalocean.com/documentation/changelog/) provider plugin for Vagrant has been tested with the following technology.
+This [Haipa API](https://developers.digitalocean.com/documentation/changelog/) provider plugin for Vagrant has been tested with the following technology.
 
-Date Tested | Vagrant Version | vagrant-digitalocean Version | Host (Workstation) Operating System | Guest (DigitalOcean) Operating System
+Date Tested | Vagrant Version | vagrant-haipa Version | Host (Workstation) Operating System | Guest (Haipa) Operating System
 ------------|-----------------|------------------------------|-----------------------|--------------------------------------
 03/22/2016  | 1.8.1           | 0.7.10                       | OS X 10.11.4          | CentOS 7.0
 04/03/2013  | 1.1.5           | 0.1.0                        | Ubuntu 12.04          | CentOS 6.3
@@ -122,11 +122,11 @@ Date Tested | Vagrant Version | vagrant-digitalocean Version | Host (Workstation
 
 Troubleshooting
 ---------------
-Before submitting a GitHub issue, please ensure both Vagrant and vagrant-digitalocean are fully up-to-date.
+Before submitting a GitHub issue, please ensure both Vagrant and vagrant-haipa are fully up-to-date.
 * For the latest Vagrant version, please visit the [Vagrant](https://www.vagrantup.com/) website
 * To update Vagrant plugins, run the following command: `vagrant plugin update`
 
-* `vagrant plugin install vagrant-digitalocean`
+* `vagrant plugin install vagrant-haipa`
     * Installation on OS X may not working due to a SSL certificate problem, and you may need to specify a certificate path explicitly. To do so, run `ruby -ropenssl -e "p OpenSSL::X509::DEFAULT_CERT_FILE"`. Then, add the following environment variable to your `.bash_profile` script and `source` it: `export SSL_CERT_FILE=/usr/local/etc/openssl/cert.pem`.
 
 
@@ -145,7 +145,7 @@ To contribute, fork then clone the repository, and then the following:
 1. Install [Bundler](http://bundler.io/)
 2. Currently the Bundler version is locked to 1.7.9, please install this version.
     * `sudo gem install bundler -v '1.7.9'`
-3. Then install vagrant-digitalocean dependencies:
+3. Then install vagrant-haipa dependencies:
     * `bundle _1.7.9_ install`
 4. Do your development and run a few commands, one to get started would be:
     * `bundle _1.7.9_ exec vagrant digitalocean-list images`
@@ -158,26 +158,26 @@ To contribute, fork then clone the repository, and then the following:
 1. Build and package your newly developed code:
     * `rake gem:build`
 2. Then install the packaged plugin:
-    * `vagrant plugin install pkg/vagrant-digitalocean-*.gem`
+    * `vagrant plugin install pkg/vagrant-haipa-*.gem`
 3. Once you're done testing, roll-back to the latest released version:
-    * `vagrant plugin uninstall vagrant-digitalocean`
-    * `vagrant plugin install vagrant-digitalocean`
+    * `vagrant plugin uninstall vagrant-haipa`
+    * `vagrant plugin install vagrant-haipa`
 4. Once you're satisfied developing and testing your new code, please submit a pull request for review.
 
 **Releasing**
 
-To release a new version of vagrant-digitalocean you will need to do the following:
+To release a new version of vagrant-haipa you will need to do the following:
 
 *(only contributors of the GitHub repo and owners of the project at RubyGems will have rights to do this)*
 
-1. First, bump, commit, and push the version in ~/lib/vagrant-digitalocean/version.rb:
+1. First, bump, commit, and push the version in ~/lib/vagrant-haipa/version.rb:
     * Follow [Semantic Versioning](http://semver.org/).
 2. Then, create a matching GitHub Release (this will also create a tag):
     * Preface the version number with a `v`.
-    * https://github.com/devopsgroup-io/vagrant-digitalocean/releases
+    * https://github.com/devopsgroup-io/vagrant-haipa/releases
 3. You will then need to build and push the new gem to RubyGems:
     * `rake gem:build`
-    * `gem push pkg/vagrant-digitalocean-0.7.6.gem`
-4. Then, when John Doe runs the following, they will receive the updated vagrant-digitalocean plugin:
+    * `gem push pkg/vagrant-haipa-0.7.6.gem`
+4. Then, when John Doe runs the following, they will receive the updated vagrant-haipa plugin:
     * `vagrant plugin update`
-    * `vagrant plugin update vagrant-digitalocean`
+    * `vagrant plugin update vagrant-haipa`

@@ -1,13 +1,13 @@
 require 'optparse'
 
 module VagrantPlugins
-  module DigitalOcean
+  module Haipa
     module Commands
       class Rebuild < Vagrant.plugin('2', :command)
 
         # Show description when `vagrant list-commands` is triggered
         def self.synopsis
-          "plugin: vagrant-digitalocean: destroys and ups the vm with the same ip address"
+          "plugin: vagrant-haipa with the same ip address"
         end
 
         def execute

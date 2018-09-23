@@ -1,18 +1,18 @@
-require 'vagrant-digitalocean/actions/check_state'
-require 'vagrant-digitalocean/actions/create'
-require 'vagrant-digitalocean/actions/destroy'
-require 'vagrant-digitalocean/actions/shut_down'
-require 'vagrant-digitalocean/actions/power_off'
-require 'vagrant-digitalocean/actions/power_on'
-require 'vagrant-digitalocean/actions/rebuild'
-require 'vagrant-digitalocean/actions/reload'
-require 'vagrant-digitalocean/actions/setup_user'
-require 'vagrant-digitalocean/actions/setup_sudo'
-require 'vagrant-digitalocean/actions/setup_key'
-require 'vagrant-digitalocean/actions/modify_provision_path'
+require 'vagrant-haipa/actions/check_state'
+require 'vagrant-haipa/actions/create'
+require 'vagrant-haipa/actions/destroy'
+require 'vagrant-haipa/actions/shut_down'
+require 'vagrant-haipa/actions/power_off'
+require 'vagrant-haipa/actions/power_on'
+require 'vagrant-haipa/actions/rebuild'
+require 'vagrant-haipa/actions/reload'
+require 'vagrant-haipa/actions/setup_user'
+require 'vagrant-haipa/actions/setup_sudo'
+require 'vagrant-haipa/actions/setup_key'
+require 'vagrant-haipa/actions/modify_provision_path'
 
 module VagrantPlugins
-  module DigitalOcean
+  module Haipa
     module Actions
       include Vagrant::Action::Builtin
 
@@ -22,7 +22,7 @@ module VagrantPlugins
           builder.use Call, CheckState do |env, b|
             case env[:machine_state]
             when :not_created
-              env[:ui].info I18n.t('vagrant_digital_ocean.info.not_created')
+              env[:ui].info I18n.t('vagrant_haipa.info.not_created')
             else
               b.use Call, DestroyConfirm do |env2, b2|
                 if env2[:result]
@@ -40,12 +40,12 @@ module VagrantPlugins
           builder.use ConfigValidate
           builder.use Call, CheckState do |env, b|
             case env[:machine_state]
-            when :active
+            when :Running
               b.use SSHExec
-            when :off
-              env[:ui].info I18n.t('vagrant_digital_ocean.info.off')
+            when :Stopped
+              env[:ui].info I18n.t('vagrant_haipa.info.off')
             when :not_created
-              env[:ui].info I18n.t('vagrant_digital_ocean.info.not_created')
+              env[:ui].info I18n.t('vagrant_haipa.info.not_created')
             end
           end
         end
@@ -56,12 +56,12 @@ module VagrantPlugins
           builder.use ConfigValidate
           builder.use Call, CheckState do |env, b|
             case env[:machine_state]
-            when :active
+            when :Running
               b.use SSHRun
-            when :off
-              env[:ui].info I18n.t('vagrant_digital_ocean.info.off')
+            when :Stopped
+              env[:ui].info I18n.t('vagrant_haipa.info.off')
             when :not_created
-              env[:ui].info I18n.t('vagrant_digital_ocean.info.not_created')
+              env[:ui].info I18n.t('vagrant_haipa.info.not_created')
             end
           end
         end
@@ -72,14 +72,14 @@ module VagrantPlugins
           builder.use ConfigValidate
           builder.use Call, CheckState do |env, b|
             case env[:machine_state]
-            when :active
+            when :Running
               b.use Provision
               b.use ModifyProvisionPath
               b.use SyncedFolders
-            when :off
-              env[:ui].info I18n.t('vagrant_digital_ocean.info.off')
+            when :Stopped
+              env[:ui].info I18n.t('vagrant_haipa.info.off')
             when :not_created
-              env[:ui].info I18n.t('vagrant_digital_ocean.info.not_created')
+              env[:ui].info I18n.t('vagrant_haipa.info.not_created')
             end
           end
         end
@@ -90,16 +90,17 @@ module VagrantPlugins
           builder.use ConfigValidate
           builder.use Call, CheckState do |env, b|
             case env[:machine_state]
-            when :active
-              env[:ui].info I18n.t('vagrant_digital_ocean.info.already_active')
-            when :off
+            when :Running
+              env[:ui].info I18n.t('vagrant_haipa.info.already_active')
+            when :Stopped
               b.use PowerOn
               b.use provision
             when :not_created
-              b.use SetupKey
+              #b.use SetupKey
               b.use Create
-              b.use SetupSudo
-              b.use SetupUser
+              b.use PowerOn
+              #b.use SetupSudo
+              #b.use SetupUser
               b.use provision
             end
           end
@@ -111,16 +112,16 @@ module VagrantPlugins
           builder.use ConfigValidate
           builder.use Call, CheckState do |env, b|
             case env[:machine_state]
-            when :active
-              if env[:force_halt] 
+            when :Running
+              if env[:force_halt]
                 b.use PowerOff
               else
                 b.use ShutDown
               end
             when :off
-              env[:ui].info I18n.t('vagrant_digital_ocean.info.already_off')
+              env[:ui].info I18n.t('vagrant_haipa.info.already_off')
             when :not_created
-              env[:ui].info I18n.t('vagrant_digital_ocean.info.not_created')
+              env[:ui].info I18n.t('vagrant_haipa.info.not_created')
             end
           end
         end
@@ -131,13 +132,13 @@ module VagrantPlugins
           builder.use ConfigValidate
           builder.use Call, CheckState do |env, b|
             case env[:machine_state]
-            when :active
+            when :Running
               b.use Reload
               b.use provision
-            when :off
-              env[:ui].info I18n.t('vagrant_digital_ocean.info.off')
+            when :Stopped
+              env[:ui].info I18n.t('vagrant_haipa.info.off')
             when :not_created
-              env[:ui].info I18n.t('vagrant_digital_ocean.info.not_created')
+              env[:ui].info I18n.t('vagrant_haipa.info.not_created')
             end
           end
         end
@@ -148,13 +149,13 @@ module VagrantPlugins
           builder.use ConfigValidate
           builder.use Call, CheckState do |env, b|
             case env[:machine_state]
-            when :active, :off
+            when :Running, :Stopped
               b.use Rebuild
-              b.use SetupSudo
-              b.use SetupUser
+              #b.use SetupSudo
+              #b.use SetupUser
               b.use provision
             when :not_created
-              env[:ui].info I18n.t('vagrant_digital_ocean.info.not_created')
+              env[:ui].info I18n.t('vagrant_haipa.info.not_created')
             end
           end
         end

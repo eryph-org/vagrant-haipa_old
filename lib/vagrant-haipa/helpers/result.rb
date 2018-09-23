@@ -1,5 +1,5 @@
 module VagrantPlugins
-  module DigitalOcean
+  module Haipa
     module Helpers
       class Result
         def initialize(body)
