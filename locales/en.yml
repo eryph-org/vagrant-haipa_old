@@ -27,6 +27,9 @@ en:
       regions: "Description                    Slug\n\n%{regions}"
       sizes: "Memory          CPUs            Slug\n\n%{sizes}"
       list_error: 'Could not contact the Haipa API: %{message}'
+      will_not_destroy: |-
+        The instance '%{name}' will not be destroyed, since the confirmation
+        was declined.      
     config:
       token: "Token is required"
       private_key: "SSH private key path is required"
