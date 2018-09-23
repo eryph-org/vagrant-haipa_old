@@ -1,15 +1,13 @@
 module VagrantPlugins
   module Haipa
     module Actions
-      class IsCreated
+      class MessageAlreadyCreated
         def initialize(app, env)
           @app = app
-          @machine = env[:machine]
-          @logger = Log4r::Logger.new('vagrant::haipa::is_created')
         end
 
         def call(env)
-          env[:result] = env[:machine].state.id != :not_created
+          env[:ui].info(I18n.t('vagrant_haipa.info.already_status', :status => "created"))
           @app.call(env)
         end
       end

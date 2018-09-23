@@ -3,7 +3,7 @@ require 'vagrant-haipa'
 module VagrantPlugins
   module Haipa
     module Actions
-      class PowerOff
+      class StopMachine
         include Helpers::Client
 
         def initialize(app, env)

@@ -3,7 +3,7 @@ require 'vagrant-haipa'
 module VagrantPlugins
   module Haipa
     module Actions
-      class PowerOn
+      class StartMachine
         include Helpers::Client
 
         def initialize(app, env)

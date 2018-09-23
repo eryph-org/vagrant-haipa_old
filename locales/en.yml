@@ -1,19 +1,18 @@
 en:
   vagrant_haipa:
     info:
-      off: "Droplet is off"
-      not_created: "Droplet has not been created"
-      already_active: "Droplet is already active"
-      already_off: "Droplet is already off"
-      creating: "Creating a new droplet..."
-      droplet_ip: "Assigned IP address: %{ip}"
-      droplet_private_ip: "Private IP address: %{ip}"
-      destroying: "Destroying the droplet..."
-      shutting_down: "Shutting down the droplet..."
-      powering_off: "Powering off the droplet..."
-      powering_on: "Powering on the droplet..."
-      rebuilding: "Rebuilding the droplet..."
-      reloading: "Rebooting the droplet..."
+      off: "Machine is off"
+      not_created: "Machine has not been created"
+      already_active: "Machine is already active"
+      already_off: "Machine is already off"
+      creating: "Creating a new machine..."
+      machine_ip: "Assigned IP address: %{ip}"
+      destroying: "Destroying the machine..."
+      shutting_down: "Shutting down the machine..."
+      powering_off: "Powering off the machine..."
+      powering_on: "Powering on the machine..."
+      rebuilding: "Rebuilding the machine..."
+      reloading: "Rebooting the machine..."
       creating_user: "Creating user account: %{user}..."
       late_sudo_install_deb8:  "Haipa's debian-8 image lacks sudo. Installing now."
       modifying_sudo: "Modifying sudoers file to remove tty requirement..."
@@ -30,6 +29,8 @@ en:
       will_not_destroy: |-
         The instance '%{name}' will not be destroyed, since the confirmation
         was declined.      
+      already_status: |-
+        The machine is already %{status}.        
     config:
       token: "Token is required"
       private_key: "SSH private key path is required"
