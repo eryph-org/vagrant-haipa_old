@@ -85,23 +85,32 @@ module VagrantPlugins
         end
       end
 
+      def self.action_prepare_boot
+        Vagrant::Action::Builder.new.tap do |b|          
+          b.use Provision
+          b.use SyncedFolders
+        end
+      end
+
       def self.up
-        return Vagrant::Action::Builder.new.tap do |builder|
-          builder.use ConfigValidate
-          builder.use Call, CheckState do |env, b|
-            case env[:machine_state]
-            when :Running
-              env[:ui].info I18n.t('vagrant_haipa.info.already_active')
-            when :Stopped
-              b.use PowerOn
-              b.use provision
-            when :not_created
-              #b.use SetupKey
-              b.use Create
-              b.use PowerOn
-              #b.use SetupSudo
-              #b.use SetupUser
-              b.use provision
+        Vagrant::Action::Builder.new.tap do |b|
+          #b.use HandleBox
+          b.use ConfigValidate
+          #b.use BoxCheckOutdated
+          b.use Call, IsCreated do |env1, b1|
+            if env1[:result]
+              b1.use Call, IsStopped do |env2, b2|
+                if env2[:result]
+                  b2.use action_prepare_boot
+                  b2.use PowerOn
+                else
+                  env[:ui].info I18n.t('vagrant_haipa.info.already_active')
+                end
+              end
+            else
+              b1.use Create
+              b1.use action_prepare_boot
+              b1.use PowerOn
             end
           end
         end
@@ -162,4 +171,9 @@ module VagrantPlugins
       end
     end
   end
+
+  # The autoload farm
+  action_root = Pathname.new(File.expand_path('../actions', __FILE__))
+  autoload :IsCreated, action_root.join('is_created')
+  autoload :IsStopped, action_root.join('is_stopped')
 end
