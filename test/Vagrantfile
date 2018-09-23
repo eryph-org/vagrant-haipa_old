@@ -10,7 +10,7 @@ Vagrant.configure('2') do |config|
  
   config.vm.provider :haipa do |provider, override|
     override.vm.box = 'haipa'
-    override.vm.box_url = "https://github.com/hyvhy/vagrant-haipa/raw/master/box/haipa.box"
+    override.vm.box_url = "https://github.com/haipa/vagrant-haipa/raw/master/box/haipa.box"
     provider.token = ENV['DO_TOKEN']
     #provider.ssh_key_name = 'Test Key'
   end
