@@ -1,6 +1,5 @@
 require 'vagrant-haipa/actions/check_state'
 require 'vagrant-haipa/actions/create'
-require 'vagrant-haipa/actions/destroy'
 require 'vagrant-haipa/actions/shut_down'
 require 'vagrant-haipa/actions/power_off'
 require 'vagrant-haipa/actions/power_on'
@@ -16,26 +15,29 @@ module VagrantPlugins
     module Actions
       include Vagrant::Action::Builtin
 
-      def self.destroy
-        return Vagrant::Action::Builder.new.tap do |builder|
-          builder.use ConfigValidate
-          builder.use Call, CheckState do |env, b|
-            case env[:machine_state]
-            when :not_created
-              env[:ui].info I18n.t('vagrant_haipa.info.not_created')
-            else
-              b.use Call, DestroyConfirm do |env2, b2|
-                if env2[:result]
-                  b2.use Destroy
-                  b2.use ProvisionerCleanup if defined?(ProvisionerCleanup)
+      # This action is called to terminate the remote machine.
+      def self.action_destroy
+        Vagrant::Action::Builder.new.tap do |b|
+          b.use Call, DestroyConfirm do |env, b2|
+            if env[:result]
+              b2.use ConfigValidate
+              b2.use Call, IsCreated do |env2, b3|
+                unless env2[:result]
+                  b3.use MessageNotCreated
+                  next
                 end
+
+                b3.use ProvisionerCleanup, :before if defined?(ProvisionerCleanup)
+                b3.use DeleteMachine
               end
+            else
+              b2.use MessageWillNotDestroy
             end
           end
         end
       end
 
-      def self.ssh
+      def self.action_ssh
         return Vagrant::Action::Builder.new.tap do |builder|
           builder.use ConfigValidate
           builder.use Call, CheckState do |env, b|
@@ -51,7 +53,7 @@ module VagrantPlugins
         end
       end
 
-      def self.ssh_run
+      def self.action_ssh_run
         return Vagrant::Action::Builder.new.tap do |builder|
           builder.use ConfigValidate
           builder.use Call, CheckState do |env, b|
@@ -67,7 +69,7 @@ module VagrantPlugins
         end
       end
 
-      def self.provision
+      def self.action_provision
         return Vagrant::Action::Builder.new.tap do |builder|
           builder.use ConfigValidate
           builder.use Call, CheckState do |env, b|
@@ -86,13 +88,13 @@ module VagrantPlugins
       end
 
       def self.action_prepare_boot
-        Vagrant::Action::Builder.new.tap do |b|          
+        Vagrant::Action::Builder.new.tap do |b|
           b.use Provision
           b.use SyncedFolders
         end
       end
 
-      def self.up
+      def self.action_up
         Vagrant::Action::Builder.new.tap do |b|
           #b.use HandleBox
           b.use ConfigValidate
@@ -116,7 +118,7 @@ module VagrantPlugins
         end
       end
 
-      def self.halt
+      def self.action_halt
         return Vagrant::Action::Builder.new.tap do |builder|
           builder.use ConfigValidate
           builder.use Call, CheckState do |env, b|
@@ -136,7 +138,7 @@ module VagrantPlugins
         end
       end
 
-      def self.reload
+      def self.action_reload
         return Vagrant::Action::Builder.new.tap do |builder|
           builder.use ConfigValidate
           builder.use Call, CheckState do |env, b|
@@ -153,7 +155,7 @@ module VagrantPlugins
         end
       end
 
-      def self.rebuild
+      def self.action_rebuild
         return Vagrant::Action::Builder.new.tap do |builder|
           builder.use ConfigValidate
           builder.use Call, CheckState do |env, b|
@@ -176,4 +178,7 @@ module VagrantPlugins
   action_root = Pathname.new(File.expand_path('../actions', __FILE__))
   autoload :IsCreated, action_root.join('is_created')
   autoload :IsStopped, action_root.join('is_stopped')
+  autoload :MessageNotCreated, action_root.join('message_not_created')
+  autoload :MessageWillNotDestroy, action_root.join('message_will_not_destroy')
+  autoload :DeleteMachine, action_root.join('delete_machine')
 end
