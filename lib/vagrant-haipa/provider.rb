@@ -13,14 +13,14 @@ module VagrantPlugins
 
         # load status of droplets if it has not been done before
         unless @droplets
-          result = client.request('/odata/machineset')
+          result = client.request('/odata/Machines', {'$expand' => 'Networks' })
           @droplets = result['value']
         end
 
         if opts[:refresh] && machine.id
           # refresh the droplet status for the given machine
           @droplets.delete_if { |d| d['Id'].to_s == machine.id }
-          result = client.request("/odata/machineset(#{machine.id})")
+          result = client.request("/odata/Machines(#{machine.id})", {'$expand' => 'Networks' })
           @droplets << droplet = result
         else
           # lookup droplet status for the given machine
@@ -80,15 +80,22 @@ module VagrantPlugins
       # `ssh` prompt with a password, whereas we can pass a private key
       # via commandline.
       def ssh_info
-        droplet = Provider.droplet(@machine)
+        machine = Provider.droplet(@machine)
 
-        return nil if droplet['Status'].to_sym != :Running
+        return nil if machine['Status'].to_sym != :Running
 
-       # public_network = droplet['networks']['v4'].find { |network| network['type'] == 'public' }
-       address = droplet['IpV4Addresses'].first
-        return {
+
+        # Run a custom action called "ssh_ip" which does what it says and puts
+        # the IP found into the `:machine_ip` key in the environment.
+        env = @machine.action("ssh_ip")
+
+        # If we were not able to identify the machine IP, we return nil
+        # here and we let Vagrant core deal with it ;)
+        return nil unless env[:machine_ip]
+
+       return {
           #:host => public_network['ip_address'],
-          :host => address,
+          :host => env[:machine_ip],
           :port => '22',
           :username => 'ubuntu',
           :password => 'ubuntu'

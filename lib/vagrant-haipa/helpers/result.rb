@@ -11,7 +11,7 @@ module VagrantPlugins
         end
 
         def find_id(sub_obj, search) #:ssh_keys, {:name => 'ijin (vagrant)'}
-          find(sub_obj, search)["id"]
+          find(sub_obj, search)['id']
         end
 
         def find(sub_obj, search)
@@ -19,8 +19,8 @@ module VagrantPlugins
           value = search[key].to_s #sfo1
           key = key.to_s #slug
 
-          result = @result[sub_obj.to_s].inject(nil) do |result, obj|
-            obj[key] == value ? obj : result
+          result = @result[sub_obj.to_s].inject(nil) do |result2, obj|
+            obj[key] == value ? obj : result2
           end
 
           result || error(sub_obj, key, value)

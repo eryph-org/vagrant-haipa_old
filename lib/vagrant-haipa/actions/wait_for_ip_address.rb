@@ -16,12 +16,14 @@ module VagrantPlugins
             next if env[:interrupted]
 
             machine = Provider.droplet(@machine, :refresh => true)
-            address = machine['IpV4Addresses'].first
+            addresses = machine['Networks'].map{|x| x['IpV4Addresses']}.flatten
+            addresses.reject! { |s| s.nil? || s.strip.empty? }
+            address = addresses.first
             raise 'not ready' unless address
+            
+            env[:machine_ip] ||= address
 
-            env[:ui].info I18n.t('vagrant_haipa.info.machine_ip', :ip => address)
-          end
-
+          end          
           @app.call(env)
         end
       end

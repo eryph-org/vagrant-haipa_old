@@ -18,57 +18,45 @@ module VagrantPlugins
           ssh_key_id = [env[:ssh_key_id]]
 
           # submit new droplet request
-          result = @client.post('/api/converge', {
+          result = @client.post('/odata/Machines', {
 
-            'vms' => [
-              {
-                'host' => {
-                  'hostname' => 'WASM06',
-                  },
-                  'vm' => {
-                    'name' => 'basic2',
-                    'hostname' => 'basic',
-                    'path' => 't:\\openstack\\vms',
-
-                    'memory' => {
-                      'startup' => 2048
+                  'Name' => 'basic2',                           
+                  'VM' => {
+                    'Path' => 't:\\openstack\\vms',
+                    'Memory' => {
+                      'Startup' => 2048
                     },
-                    'disks' => [
+                    'Disks' => [
                       {
-                        "template" => "t:\\openstack\\ubuntu-xenial.vhdx",
-                        "size" => 20
+                        "Template" => "t:\\openstack\\ubuntu-xenial.vhdx",
+                        "Size" => 20
                       },
-                    ],
-                    'networks' => [
+                    ],  
+                    'NetworkAdapters' => [
                       {
-                        "name" => "eth0",
-                        "switch" => "Standardswitch",
-                        "subnets" => [
-                          {
-                            'type' => "dhcp"
-                          }
-                        ]
-                      },
+                        "Name" => "eth0",
+                        "SwitchName" => "Standardswitch",
+                      },                                                          
                     ],
-                    "provisioning" => {
-                      "userdata" => {
+                  },
+                  "Provisioning" => {
+                    'Hostname' => 'basic',
+                    "UserData" => {
                       "password" => "ubuntu",
                       "chpasswd" => {
                         "expire"=> "False"
-                      }
                     }
                   }
-                  }
-              },
-            ]
+                }
+              
         })
 
           # wait for request to complete
           env[:ui].info I18n.t('vagrant_haipa.info.creating')
-          @client.wait_for_event(env, result['id'])
+          @client.wait_for_event(env, result['Id'])
 
           # assign the machine id for reference in other commands
-          operation_result = @client.request("odata/OperationSet(#{result['id']})")
+          operation_result = @client.request("odata/Operations(#{result['Id']})")
           @machine.id = operation_result['MachineGuid'].to_s
 
           @app.call(env)

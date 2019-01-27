@@ -11,7 +11,7 @@
             "request": "launch",
             "cwd": "${workspaceRoot}\\test",
             "useBundler": true,
-            "pathToBundler": "C:\\Ruby25-x64\\bin\\bundle.bat",
+            "pathToBundler": "C:\\tools\\Ruby25\\bin\\bundle.bat",
             "program": "${workspaceRoot}/vagrant",
             "args": [ "up", "--provider=haipa"]
         },
@@ -21,7 +21,7 @@
             "request": "launch",
             "cwd": "${workspaceRoot}\\test",
             "useBundler": true,
-            "pathToBundler": "C:\\Ruby25-x64\\bin\\bundle.bat",
+            "pathToBundler": "C:\\tools\\Ruby25\\bin\\bundle.bat",
             "program": "${workspaceRoot}/vagrant",
             "args": [ "destroy","--force" ]
         }        
