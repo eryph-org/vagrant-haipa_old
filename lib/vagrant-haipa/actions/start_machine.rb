@@ -15,7 +15,7 @@ module VagrantPlugins
 
         def call(env)
           # submit power on droplet request
-          result = @client.post("/odata/MachineSet(#{@machine.id})/Start")
+          result = @client.post("/odata/Machines(#{@machine.id})/Start")
 
           # wait for request to complete
           env[:ui].info I18n.t('vagrant_haipa.info.powering_on') 

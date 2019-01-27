@@ -110,6 +110,14 @@ module VagrantPlugins
         end
       end
 
+      def self.action_ssh_ip
+        Vagrant::Action::Builder.new.tap do |b|
+          b.use Call, ConfigValidate do |env, b2|
+            b2.use WaitForIpAddress
+          end
+        end
+      end
+
       def self.action_start
         Vagrant::Action::Builder.new.tap do |b|
           b.use Call, IsState, :running do |env1, b1|
@@ -126,7 +134,6 @@ module VagrantPlugins
 
               b2.use Provision
               b2.use StartMachine
-              b2.use WaitForIpAddress
               b2.use WaitForCommunicator, [:running]
               b2.use SyncedFolderCleanup
               b2.use SyncedFolders

@@ -2,7 +2,7 @@ module VagrantPlugins
   module Haipa
     module Actions
       class MessageWillNotDestroy
-        def initialize(app, env)
+        def initialize(app, _)
           @app = app
         end
 
