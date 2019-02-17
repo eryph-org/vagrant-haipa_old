@@ -1,11 +1,11 @@
 module VagrantPlugins
-  module DigitalOcean
+  module Haipa
     module Actions
       class SetupUser
         def initialize(app, env)
           @app = app
           @machine = env[:machine]
-          @logger = Log4r::Logger.new('vagrant::digitalocean::setup_user')
+          @logger = Log4r::Logger.new('vagrant::haipa::setup_user')
         end
 
         def call(env)
@@ -16,10 +16,10 @@ module VagrantPlugins
           return @app.call(env) unless @machine.config.ssh.username
 
           # override ssh username to root temporarily
-          user = @machine.config.ssh.username
-          @machine.config.ssh.username = 'root'
+          #user = @machine.config.ssh.username
+          #@machine.config.ssh.username = 'root'
 
-          env[:ui].info I18n.t('vagrant_digital_ocean.info.creating_user', {
+          env[:ui].info I18n.t('vagrant_haipa.info.creating_user', {
             :user => user
           })
 
@@ -46,7 +46,7 @@ module VagrantPlugins
           path = @machine.config.ssh.private_key_path
           path = path[0] if path.is_a?(Array)
           path = File.expand_path(path, @machine.env.root_path)
-          pub_key = DigitalOcean.public_key(path)
+          pub_key = Haipa.public_key(path)
           @machine.communicate.execute(<<-BASH)
             if ! grep '#{pub_key}' /home/#{user}/.ssh/authorized_keys; then
               echo '#{pub_key}' >> /home/#{user}/.ssh/authorized_keys;
