@@ -20,35 +20,9 @@ module VagrantPlugins
           # submit new droplet request
           result = @client.post('/odata/Machines', {
 
-                  'Name' => 'basic2',                           
-                  'VM' => {
-                    'Path' => 't:\\openstack\\vms',
-                    'Memory' => {
-                      'Startup' => 2048
-                    },
-                    'Disks' => [
-                      {
-                        "Template" => "t:\\openstack\\ubuntu-xenial.vhdx",
-                        "Size" => 20
-                      },
-                    ],  
-                    'NetworkAdapters' => [
-                      {
-                        "Name" => "eth0",
-                        "SwitchName" => "Standardswitch",
-                      },                                                          
-                    ],
-                  },
-                  "Provisioning" => {
-                    'Hostname' => 'basic',
-                    "UserData" => {
-                      "password" => "ubuntu",
-                      "chpasswd" => {
-                        "expire"=> "False"
-                    }
-                  }
-                }
-              
+                  'Name' => env[:generated_name],                           
+                  'VM' => @machine.provider_config.vm_config,
+                  "Provisioning" => @machine.provider_config.provision            
         })
 
           # wait for request to complete
