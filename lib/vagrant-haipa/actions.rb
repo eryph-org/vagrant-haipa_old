@@ -160,6 +160,7 @@ module VagrantPlugins
                 end
               end
             else
+              b1.use SetName
               b1.use CreateMachine
               b1.use action_start
             end
@@ -202,6 +203,7 @@ module VagrantPlugins
       autoload :StartMachine, action_root.join('start_machine')
       autoload :StopMachine, action_root.join('stop_machine')
       autoload :WaitForIpAddress, action_root.join('wait_for_ip_address')
+      autoload :SetName, action_root.join('set_name')
     end
   end
 end

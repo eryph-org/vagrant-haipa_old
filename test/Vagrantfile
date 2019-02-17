@@ -4,6 +4,7 @@ Vagrant.configure('2') do |config|
  # config.omnibus.chef_version = :latest
 
   config.ssh.username = 'ubuntu'
+  config.ssh.password = 'vagrant'
   #config.ssh.private_key_path = 'test_id_rsa'
   #config.vm.allowed_synced_folder_types = [:rsync]
   config.vm.synced_folder ".", "/vagrant", disabled: true
@@ -25,6 +26,34 @@ Vagrant.configure('2') do |config|
   config.vm.define :ubuntu do |ubuntu|
     ubuntu.vm.provider :haipa do |provider|
       provider.image = 'ubuntu-14-04-x64'
+      provider.vm_config = {
+        'Path' => 't:\\openstack\\vms',
+        'Memory' => {
+          'Startup' => 2048
+        },
+        'Disks' => [
+          {
+            "Template" => 't:\\openstack\\ubuntu-xenial.vhdx',
+            "Size" => 20
+          }
+        ],  
+        'NetworkAdapters' => [
+          {
+            "Name" => "eth0",
+            "SwitchName" => "Default Switch",
+          }                                                          
+        ] ,
+      }
+
+      provider.provision = {
+        'Hostname' => 'basic',
+        "UserData" => {
+          "password" => config.ssh.password,
+          "chpasswd" => {
+            "expire"=> "False"
+        }
+      }
+    }
     end
   end
 
