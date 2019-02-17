@@ -1,8 +1,6 @@
 require 'vagrant-haipa/helpers/result'
 require 'faraday'
 require 'json'
-require 'erb'
-
 module VagrantPlugins
   module Haipa
     module Helpers
@@ -26,12 +24,11 @@ module VagrantPlugins
           })
         end
 
-        def delete(path, params = {}, method = :delete)
-          @client.request :url_encoded
+        def delete(path, params = {})
           request(path, params, :delete)
         end
 
-        def post(path, params = {}, method = :post)
+        def post(path, params = {})
           @client.headers['Content-Type'] = 'application/json'
           request(path, params, :post)
         end
@@ -41,8 +38,9 @@ module VagrantPlugins
             @logger.info "Request: #{path}"
             result = @client.send(method) do |req|
               req.url path
-              req.body = params.to_json if method == :post
-              req.params = params unless method == :post
+              req.body = params.to_json unless method == :get
+              req.params = params if method == :get
+
               req.headers['Authorization'] = "Bearer #{@config.token}"
             end
           rescue Faraday::Error::ConnectionFailed => e
@@ -56,31 +54,18 @@ module VagrantPlugins
             raise e
           end
 
-          unless method == :delete
-            begin              
-              body = JSON.parse(result.body)
-              body.delete_if {|key, value| key == '@odata.context' }
+          begin
+            body = JSON.parse(result.body)
+            body.delete_if { |key, _| key == '@odata.context' }
 
-              @logger.info "Response: #{body}"
-              next_page = body["links"]["pages"]["next"] rescue nil
-              unless next_page.nil?
-                uri = URI.parse(next_page)
-                new_path = path.split("?")[0]
-                next_result = self.request("#{new_path}?#{uri.query}")
-                req_target = new_path.split("/")[-1]
-                if req_target == 'keys'
-                        req_target = 'ssh_keys'
-                end
-                body["#{req_target}"].concat(next_result["#{req_target}"])
-              end              
-            rescue JSON::ParserError => e
-              raise(Errors::JSONError, {
-                :message => e.message,
-                :path => path,
-                :params => params,
-                :response => result.body
-              })
-            end
+            @logger.info "Response: #{body}"
+          rescue JSON::ParserError => e
+            raise(Errors::JSONError, {
+              :message => e.message,
+              :path => path,
+              :params => params,
+              :response => result.body
+            })
           end
 
           unless /^2\d\d$/ =~ result.status.to_s
@@ -96,14 +81,14 @@ module VagrantPlugins
 
         def wait_for_event(env, id)
           timestamp = '2018-09-01T23:47:17.50094+02:00'
-          
+
+          operation_error = nil
           retryable(:tries => 20, :sleep => 5) do
             # stop waiting if interrupted
             next if env[:interrupted]
 
             # check action status
-            encoded_timestamp = ERB::Util.url_encode("Timestamp gt #{timestamp}")
-            result = self.request("odata/OperationSet(#{id})", "$expand" => "LogEntries($filter=Timestamp gt #{timestamp})")
+            result = request("odata/Operations(#{id})", '$expand' => "LogEntries($filter=Timestamp gt #{timestamp})")
 
             result['LogEntries'].each do |entry|
               env[:ui].info(entry['Message'])
@@ -112,8 +97,13 @@ module VagrantPlugins
             end
 
             yield result if block_given?
-            raise 'not ready' if result['Status'] != 'Completed'
+
+            raise 'Operation not completed' if result['Status'] == 'Running' || result['Status'] == 'Queued'
+            operation_error = result['StatusMessage'] if result['Status'] == 'Failed'
           end
+
+          raise "Operation failed: #{operation_error}" if operation_error
+
         end
       end
     end

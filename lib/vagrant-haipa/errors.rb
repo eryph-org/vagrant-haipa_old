@@ -32,6 +32,10 @@ module VagrantPlugins
       class RsyncError < HaipaError
         error_key(:rsync)
       end
+
+      class OperationNotCompleted < HaipaError
+        error_key(:rsync)
+      end      
     end
   end
 end

@@ -15,7 +15,7 @@ module VagrantPlugins
 
         def call(env)
           # submit shutdown droplet request
-          result = @client.post("/odata/MachineSet(#{@machine.id})/Stop")
+          result = @client.post("/odata/Machines(#{@machine.id})/Stop")
 
           # wait for request to complete
           env[:ui].info I18n.t('vagrant_haipa.info.shutting_down')

@@ -4,15 +4,26 @@
     // Weitere Informationen finden Sie unter https://go.microsoft.com/fwlink/?linkid=830387
     "version": "0.2.0",
     "configurations": [
+        
         {
-            "name": "Vagrant",
+            "name": "Vagrant up",
             "type": "Ruby",
             "request": "launch",
             "cwd": "${workspaceRoot}\\test",
             "useBundler": true,
-            "pathToBundler": "C:\\Ruby25-x64\\bin\\bundle.bat",
+            "pathToBundler": "C:\\tools\\Ruby25\\bin\\bundle.bat",
             "program": "${workspaceRoot}/vagrant",
             "args": [ "up", "--provider=haipa"]
-        }
+        },
+        {
+            "name": "Vagrant destroy",
+            "type": "Ruby",
+            "request": "launch",
+            "cwd": "${workspaceRoot}\\test",
+            "useBundler": true,
+            "pathToBundler": "C:\\tools\\Ruby25\\bin\\bundle.bat",
+            "program": "${workspaceRoot}/vagrant",
+            "args": [ "destroy","--force" ]
+        }        
     ]
 }

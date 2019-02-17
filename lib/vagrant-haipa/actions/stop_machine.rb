@@ -3,7 +3,7 @@ require 'vagrant-haipa'
 module VagrantPlugins
   module Haipa
     module Actions
-      class PowerOff
+      class StopMachine
         include Helpers::Client
 
         def initialize(app, env)
@@ -15,7 +15,7 @@ module VagrantPlugins
 
         def call(env)
           # submit power off droplet request
-          result = @client.post("/odata/MachineSet(#{@machine.id})/Stop")
+          result = @client.post("/odata/Machines(#{@machine.id})/Stop")
 
           # wait for request to complete
           env[:ui].info I18n.t('vagrant_haipa.info.powering_off')
