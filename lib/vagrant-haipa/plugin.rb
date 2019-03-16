@@ -12,7 +12,7 @@ module VagrantPlugins
         Config
       end
 
-      provider(:haipa, parallel: true, defaultable: false) do
+      provider(:haipa, parallel: true, defaultable: false, box_optional: true) do
         require_relative 'provider'
         Provider
       end
