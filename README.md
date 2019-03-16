@@ -18,47 +18,46 @@ Install the provider plugin using the Vagrant command-line interface:
 
 Configure
 ---------
-Once the provider has been installed, you will need to configure your project to use it. See the following example for a basic multi-machine `Vagrantfile` implementation that manages two Haipa Machines:
+Once the provider has been installed, you will need to configure your project to use it. See the following example for a basic `Vagrantfile` implementation:
 
 ```ruby
-Vagrant.configure('2') do |config|
-
-  config.vm.define "machine1" do |config|
-      config.vm.provider :haipa do |provider, override|
-        override.vm.box = 'haipa'
-        override.vm.box_url = "https://github.com/haipa/vagrant-haipa/raw/master/box/haipa.box"
-      end
-  end
-
-  config.vm.define "droplet2" do |config|
-      config.vm.provider :digital_ocean do |provider, override|
-        override.vm.box = 'haipa'
-        override.vm.box_url = "https://github.com/haipa/vagrant-haipa/raw/master/box/haipa.box"
-        override.nfs.functional = false
-      end
+  config.vm.define :ubuntu do |ubuntu|
+    ubuntu.vm.provider :haipa do |provider|
+      provider.vm_config = {
+         'Memory' => {
+          'Startup' => 2048
+        },
+        'Disks' => [
+          {
+            "Template" => 'c:\hyperv-templates\ubuntu-xenial.vhdx',
+            "Size" => 20
+          }
+        ],  
+        'NetworkAdapters' => [
+          {
+            "Name" => "eth0",
+            "SwitchName" => "Default Switch",
+          }                                                          
+        ]
+      }
+    end
   end
 end
 ```
 
+
 **Supported Configuration Attributes**
 
 The following attributes are available to further configure the provider:
-- `provider.image`
-    * A string representing the image to use when creating a new machine. It defaults to `ubuntu-14-04-x64`.
-    List available images with the `vagrant haipa-list images` command.
-
-- `provider.region`
-    * A string representing the region to create the new machine in. It defaults to `default`. List available regions with the `vagrant digitalocean-list regions` command.
-- `provider.flavor`
-    * A string representing the flavor to use when creating a new Droplet (e.g. `medium`). It defaults to `default`. List available sizes with the `vagrant haipa-list flavors` command.
 - `provider.vm_config`
     * A Hash with the Haipa vm configuration
-
+- `provider.provision`
+    * A Hash with the Haipa provision configuration
 
 Run
 ---
 After creating your project's `Vagrantfile` with the required configuration
-attributes described above, you may create a new Droplet with the following
+attributes described above, you may create a new Machine with the following
 command:
 
     $ vagrant up --provider=haipa
@@ -73,8 +72,6 @@ The provider supports the following Vagrant sub-commands:
 - `vagrant ssh` - Logs into the machine instance using the configured user account.
 - `vagrant halt` - Powers off the machine instance.
 - `vagrant provision` - Runs the configured provisioners and rsyncs any specified `config.vm.synced_folder`.
-- `vagrant reload` - Reboots the machine instance.
-- `vagrant rebuild` - Destroys the machine instance and recreates it with the same IP address which was previously assigned.
 - `vagrant status` - Outputs the status (active, off, not created) for the machine instance.
 
 

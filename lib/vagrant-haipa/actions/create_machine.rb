@@ -17,7 +17,7 @@ module VagrantPlugins
         def call(env)
           ssh_key_id = [env[:ssh_key_id]]
 
-          # submit new droplet request
+          # submit new machine request
           result = @client.post('/odata/Machines', {
 
                   'Name' => env[:generated_name],                           

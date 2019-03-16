@@ -5,45 +5,45 @@ module VagrantPlugins
   module Haipa
     class Provider < Vagrant.plugin('2', :provider)
 
-      def self.droplets(machine)
+      def self.haipa_machines(machine)
         client = Helpers::ApiClient.new(machine)
 
-        unless @droplets
+        unless @haipa_machines
           result = client.request('/odata/Machines', {'$expand' => 'Networks' })
-          @droplets = result['value']
+          @haipa_machines = result['value']
         end
-        return @droplets
+        return @haipa_machines
       end
 
-      # This class method caches status for all droplets within
-      # the Haipa account. A specific droplet's status
+      # This class method caches status for all machines within
+      # the Haipa account. A specific machine's status
       # may be refreshed by passing :refresh => true as an option.
-      def self.droplet(machine, opts = {})
+      def self.haipa_machine(machine, opts = {})
         client = Helpers::ApiClient.new(machine)
 
-        # load status of droplets if it has not been done before
-        droplets(machine)
+        # load status of machines if it has not been done before
+        haipa_machines(machine)
 
         if opts[:refresh] && machine.id
-          # refresh the droplet status for the given machine
-          @droplets.delete_if { |d| d['Id'].to_s == machine.id }
+          # refresh the machine status for the given machine
+          @haipa_machines.delete_if { |d| d['Id'].to_s == machine.id }
           result = client.request("/odata/Machines(#{machine.id})", {'$expand' => 'Networks' })
-          @droplets << droplet = result
+          @haipa_machines << haipa_machine = result
         else
-          # lookup droplet status for the given machine
-          droplet = @droplets.find { |d| d['Id'].to_s == machine.id }
+          # lookup machine status for the given machine
+          haipa_machine = @haipa_machines.find { |d| d['Id'].to_s == machine.id }
         end
 
-        # if lookup by id failed, check for a droplet with a matching name
+        # if lookup by id failed, check for a machine with a matching name
         # and set the id to ensure vagrant stores locally
         # TODO allow the user to configure this behavior
-        unless droplet
+        unless haipa_machine
           name = machine.config.vm.hostname || machine.name
-          droplet = @droplets.find { |d| d['Name'] == name.to_s }
-          machine.id = droplet['Id'].to_s if droplet
+          haipa_machine = @haipa_machines.find { |d| d['Name'] == name.to_s }
+          machine.id = haipa_machine['Id'].to_s if haipa_machine
         end
 
-        droplet || { 'Status' => 'not_created' }
+        haipa_machine || { 'Status' => 'not_created' }
       end
 
       def initialize(machine)
@@ -87,7 +87,7 @@ module VagrantPlugins
       # `ssh` prompt with a password, whereas we can pass a private key
       # via commandline.
       def ssh_info
-        machine = Provider.droplet(@machine)
+        machine = Provider.haipa_machine(@machine)
 
         return nil if machine['Status'].to_sym != :Running
 
@@ -109,7 +109,7 @@ module VagrantPlugins
       # The state must be an instance of {MachineState}. Please read the
       # documentation of that class for more information.
       def state
-        state = Provider.droplet(@machine)['Status'].downcase.to_sym
+        state = Provider.haipa_machine(@machine)['Status'].downcase.to_sym
         long = short = state.to_s
         Vagrant::MachineState.new(state, short, long)
       end

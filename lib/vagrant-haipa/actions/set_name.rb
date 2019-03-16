@@ -34,8 +34,8 @@ module VagrantPlugins
           end
 
           # Verify the name is not taken
-          existing_vm = Provider.droplets(@machine).find { |d| d['Name'].to_s == name }
-          raise Vagrant::Errors::VMNameExists, name: name if existing_vm
+          haipa_machine = Provider.haipa_machines(@machine).find { |d| d['Name'].to_s == name }
+          raise Vagrant::Errors::VMNameExists, name: name if haipa_machine
           
           env[:generated_name] = name
           # Create the sentinel

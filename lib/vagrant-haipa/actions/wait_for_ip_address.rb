@@ -11,12 +11,12 @@ module VagrantPlugins
         end
 
         def call(env)
-          # refresh droplet state with provider and output ip address
+          # refresh machine state with provider and output ip address
           retryable(:tries => 20, :sleep => 10) do
             next if env[:interrupted]
 
-            machine = Provider.droplet(@machine, :refresh => true)
-            addresses = machine['Networks'].map{|x| x['IpV4Addresses']}.flatten
+            haipa_machine = Provider.haipa_machine(@machine, :refresh => true)
+            addresses = haipa_machine['Networks'].map{|x| x['IpV4Addresses']}.flatten
             addresses.reject! { |s| s.nil? || s.strip.empty? }
             address = addresses.first
             raise 'not ready' unless address
