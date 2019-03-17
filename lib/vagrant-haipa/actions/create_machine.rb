@@ -18,20 +18,21 @@ module VagrantPlugins
           ssh_key_id = [env[:ssh_key_id]]
 
           # submit new machine request
-          result = @client.post('/odata/Machines', {
+          result = @client.post('/odata/v1/Machines', {
 
-                  'Name' => env[:generated_name],                           
-                  'VM' => @machine.provider_config.vm_config,
-                  "Provisioning" => @machine.provider_config.provision            
+                  'name' => env[:generated_name],                           
+                  'vm' => @machine.provider_config.vm_config,
+                  "provisioning" => @machine.provider_config.provision            
         })
 
           # wait for request to complete
           env[:ui].info I18n.t('vagrant_haipa.info.creating')
-          @client.wait_for_event(env, result['Id'])
+          operation_id = result['id']
+          @client.wait_for_event(env, operation_id)
 
           # assign the machine id for reference in other commands
-          operation_result = @client.request("odata/Operations(#{result['Id']})")
-          @machine.id = operation_result['MachineGuid'].to_s
+          operation_result = @client.request("odata/Operations(#{operation_id})")
+          @machine.id = operation_result['machineGuid'].to_s
 
           @app.call(env)
         end

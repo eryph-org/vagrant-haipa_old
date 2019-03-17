@@ -90,16 +90,16 @@ module VagrantPlugins
             # check action status
             result = request("odata/Operations(#{id})", '$expand' => "LogEntries($filter=Timestamp gt #{timestamp})")
 
-            result['LogEntries'].each do |entry|
-              env[:ui].info(entry['Message'])
+            result['logEntries'].each do |entry|
+              env[:ui].info(entry['message'])
 
-              timestamp = entry['Timestamp']
+              timestamp = entry['timestamp']
             end
 
             yield result if block_given?
 
-            raise 'Operation not completed' if result['Status'] == 'Running' || result['Status'] == 'Queued'
-            operation_error = result['StatusMessage'] if result['Status'] == 'Failed'
+            raise 'Operation not completed' if result['status'] == 'Running' || result['status'] == 'Queued'
+            operation_error = result['statusMessage'] if result['status'] == 'Failed'
           end
 
           raise "Operation failed: #{operation_error}" if operation_error

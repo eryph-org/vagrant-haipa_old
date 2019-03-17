@@ -9,7 +9,7 @@ module VagrantPlugins
         client = Helpers::ApiClient.new(machine)
 
         unless @haipa_machines
-          result = client.request('/odata/Machines', {'$expand' => 'Networks' })
+          result = client.request('/odata/v1/Machines', {'$expand' => 'Networks' })
           @haipa_machines = result['value']
         end
         return @haipa_machines
@@ -26,12 +26,12 @@ module VagrantPlugins
 
         if opts[:refresh] && machine.id
           # refresh the machine status for the given machine
-          @haipa_machines.delete_if { |d| d['Id'].to_s == machine.id }
-          result = client.request("/odata/Machines(#{machine.id})", {'$expand' => 'Networks' })
+          @haipa_machines.delete_if { |d| d['id'].to_s == machine.id }
+          result = client.request("/odata/v1/Machines(#{machine.id})", {'$expand' => 'Networks' })
           @haipa_machines << haipa_machine = result
         else
           # lookup machine status for the given machine
-          haipa_machine = @haipa_machines.find { |d| d['Id'].to_s == machine.id }
+          haipa_machine = @haipa_machines.find { |d| d['id'].to_s == machine.id }
         end
 
         # if lookup by id failed, check for a machine with a matching name
@@ -39,11 +39,11 @@ module VagrantPlugins
         # TODO allow the user to configure this behavior
         unless haipa_machine
           name = machine.config.vm.hostname || machine.name
-          haipa_machine = @haipa_machines.find { |d| d['Name'] == name.to_s }
-          machine.id = haipa_machine['Id'].to_s if haipa_machine
+          haipa_machine = @haipa_machines.find { |d| d['name'] == name.to_s }
+          machine.id = haipa_machine['id'].to_s if haipa_machine
         end
 
-        haipa_machine || { 'Status' => 'not_created' }
+        haipa_machine || { 'status' => 'not_created' }
       end
 
       def initialize(machine)
@@ -89,7 +89,7 @@ module VagrantPlugins
       def ssh_info
         machine = Provider.haipa_machine(@machine)
 
-        return nil if machine['Status'].to_sym != :Running
+        return nil if machine['status'].to_sym != :Running
 
 
         # Run a custom action called "ssh_ip" which does what it says and puts
@@ -109,7 +109,10 @@ module VagrantPlugins
       # The state must be an instance of {MachineState}. Please read the
       # documentation of that class for more information.
       def state
-        state = Provider.haipa_machine(@machine)['Status'].downcase.to_sym
+        state = :error
+        haipa_machine = Provider.haipa_machine(@machine)
+        
+        state = haipa_machine['status'].downcase.to_sym if haipa_machine
         long = short = state.to_s
         Vagrant::MachineState.new(state, short, long)
       end

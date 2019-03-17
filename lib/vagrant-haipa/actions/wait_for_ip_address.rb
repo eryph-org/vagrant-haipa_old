@@ -16,7 +16,7 @@ module VagrantPlugins
             next if env[:interrupted]
 
             haipa_machine = Provider.haipa_machine(@machine, :refresh => true)
-            addresses = haipa_machine['Networks'].map{|x| x['IpV4Addresses']}.flatten
+            addresses = haipa_machine['networks'].map{|x| x['ipV4Addresses']}.flatten
             addresses.reject! { |s| s.nil? || s.strip.empty? }
             address = addresses.first
             raise 'not ready' unless address
